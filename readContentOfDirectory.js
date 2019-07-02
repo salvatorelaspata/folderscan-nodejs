@@ -1,13 +1,12 @@
-
 //requiring path and fs modules
-const path = require('path');
-const fs = require('fs-meta');
+//const path = require('path');
+const fs = require("fs-meta");
 // const sizeOf = require('image-size');
 //joining path of directory
 //const directoryPath = path.join(__dirname, 'C:/Users/cube27/Desktop/nodejs/u/');
-const directoryPath = 'C:/Users/cube27/Pictures/';
+const directoryPath = "E:/Foto/";
 //passsing directoryPath and callback function
-  fs.readdir(directoryPath, function (err, files) {
+/*    fs.readdir(directoryPath, function (err, files) {
       //handling error
       if (err) {
           return console.log('Unable to scan directory: ' + err);
@@ -21,13 +20,19 @@ const directoryPath = 'C:/Users/cube27/Pictures/';
           fs.stat(dir, function (err, stats) {
               if (err)
                  throw err;
-              /*if (stats.isFile()) {
+              if (stats.isFile()) {
                   console.log('\n\nIt\'s a file!',stats);
-              }*/
+              }
               if (stats.isDirectory()) {
                 console.log('\n\nIt\'s a directory!',dir);
               }
           });
       });
-  });
-
+  }); */
+const dirTree = require("directory-tree");
+const tree = dirTree(directoryPath, { attributes: ["birthtime", "size"] });
+fs.writeFile("EXPORT.json", JSON.stringify(tree), function(err) {
+  if (err) throw err;
+  console.log("Saved!");
+});
+console.log("tree", tree);
