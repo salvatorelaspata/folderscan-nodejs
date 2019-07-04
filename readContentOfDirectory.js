@@ -21,14 +21,29 @@ let arrayItem = [];
  * @param  {function} onEachDirectory
  * @return {Object}
  */
-console.log('dirTree - i ', new Date());
+//console.log('dirTree - i ', new Date());
 start();
+let objKeyByDate = {};
 const tree = dirTree(directoryPath, { attributes: ["birthtime", "size"] }, (item, PATH, stats)=>{
   let obj = {};
   arrayNameFile.push(item.name);
   arrayItem.push(item);
   obj[item.path] = item;
   array.push(obj);
+
+  let key = stats.birthtime.getFullYear();
+  
+  if(!objKeyByDate[key]){
+    objKeyByDate[key] = [];
+    objKeyByDate[key].push(item)
+  }else{
+    objKeyByDate[key].push(item);
+  }
+  /* if( objKeyByDate[key]){
+    objKeyByDate[key].push(item);
+  }else{
+
+  } */
 } /*
 , (item, PATH, stats)=>{
   let objDir = {};
@@ -40,24 +55,40 @@ const tree = dirTree(directoryPath, { attributes: ["birthtime", "size"] }, (item
   arrayDirectory.push(objDir);
 } */);
 end('dirTree');
-console.log('dirTree - f ', new Date());
 
-debugger;
-let uniqueArrayNameFile = [...new Set(arrayNameFile)];
-let uniqueArrayFile = [... new Set(arrayItem)];
-console.log('count - i ', new Date());
-start();
-let countResults = count(arrayNameFile);
-console.log('count - f ', new Date());
-end('count');
-let duplicatesResults = duplicates(count(arrayNameFile));
+//let uniqueArrayNameFile = [...new Set(arrayNameFile)];
+//let uniqueArrayFile = [... new Set(arrayItem)];
+//console.log('count - i ', new Date());
+//start();
+//let countResults = count(arrayNameFile);
+//console.log('count - f ', new Date());
+//end('count');
+//start();
+//let duplicatesResults = duplicates(count(arrayNameFile));
+//end('duplicates');
 
 fs.writeFile("tree.json", JSON.stringify(tree), function(err) {
   if (err) throw err;
   console.log("Saved!");
 });
 
+fs.writeFile("objKeyByDate.json", JSON.stringify(objKeyByDate), function(err) {
+  if (err) throw err;
+  console.log("Saved!");
+});
 
+const arryaKeyByDate = Object.getOwnPropertyNames(objKeyByDate);
+let objj = {};
+arryaKeyByDate.forEach(element => {
+  objj[element] = objKeyByDate[element].length;
+});
+
+fs.writeFile("objKeyByDate_count.json", JSON.stringify(objj), function(err) {
+  if (err) throw err;
+  console.log("Saved!");
+});
+
+console.log('FINISH');
 
 
 
