@@ -1,14 +1,16 @@
 const fs = require("fs-meta");
+const ffss = require('fs');
 const dirTree = require("directory-tree");
 const PATH = require("path");
+const moment = require("moment");
 
-const { count, duplicates, start, end } = require("./include");
+const { count, duplicates, start, end, conta } = require("./include");
 
-const directoryPath = "E:/Foto/";
-let array = [];
-let arrayNameFile = [];
-let arrayItem = [];
-//let arrayDirectory = [];
+const directoryPath = "G:/Foto/";
+let filename = moment().format('gg-MM-YYYY--HH-mm-ss');
+
+start();
+
 /**
  * Collects the files and folders for a directory path into an Object, subject
  * to the options supplied, and invoking optional
@@ -21,16 +23,16 @@ let arrayItem = [];
  * @param  {function} onEachDirectory
  * @return {Object}
  */
-//console.log('dirTree - i ', new Date());
-start();
 let objKeyByDate = {};
+let arrayFileName = [];
+let arrayItemName = [];
 const tree = dirTree(directoryPath, { attributes: ["birthtime", "size"] }, (item, PATH, stats)=>{
-  let obj = {};
-  arrayNameFile.push(item.name);
-  arrayItem.push(item);
-  obj[item.path] = item;
-  array.push(obj);
+  let objName = {};
+  objName['fileName'] = item.name;
+  objName['item'] = item;
 
+  arrayFileName.push(item.name);
+  arrayItemName.push(item);
   let key = stats.birthtime.getFullYear();
   
   if(!objKeyByDate[key]){
@@ -39,40 +41,45 @@ const tree = dirTree(directoryPath, { attributes: ["birthtime", "size"] }, (item
   }else{
     objKeyByDate[key].push(item);
   }
-  /* if( objKeyByDate[key]){
-    objKeyByDate[key].push(item);
-  }else{
 
-  } */
-} /*
-, (item, PATH, stats)=>{
-  let objDir = {};
+});
 
-  if(stats.isDirectory()){ //sempre true.
-    debugger;
-    objDir[item.path] = item.children;
-  }
-  arrayDirectory.push(objDir);
-} */);
-end('dirTree');
+end(`dirTree: ${directoryPath} `);
 
-//let uniqueArrayNameFile = [...new Set(arrayNameFile)];
-//let uniqueArrayFile = [... new Set(arrayItem)];
-//console.log('count - i ', new Date());
-//start();
-//let countResults = count(arrayNameFile);
-//console.log('count - f ', new Date());
-//end('count');
-//start();
-//let duplicatesResults = duplicates(count(arrayNameFile));
-//end('duplicates');
+/* if (ffss.existsSync('./tmp')) {
+  debugger;
+  ffss.mkdir('./tmp', {}, (err) => {
+    if (err) throw err;
+  });
+} */
+//debugger;
+const conteggio = conta(arrayFileName);
+let objConteggio = {};
+for(var key in conteggio) {
+  
+    var value = conteggio[key];
+    if (value > 1) {
+      objConteggio[key] = value;
+    }
+}
 
-fs.writeFile("tree.json", JSON.stringify(tree), function(err) {
+fs.writeFile(`./tmp/${filename}__conteggio.json`, JSON.stringify(conteggio), function(err) {
+  if (err) throw err;
+  console.log("Saved!");
+});
+fs.writeFile(`./tmp/${filename}__objConteggio.json`, JSON.stringify(objConteggio), function(err) {
   if (err) throw err;
   console.log("Saved!");
 });
 
-fs.writeFile("objKeyByDate.json", JSON.stringify(objKeyByDate), function(err) {
+
+
+fs.writeFile(`./tmp/${filename}__tree.json`, JSON.stringify(tree), function(err) {
+  if (err) throw err;
+  console.log("Saved!");
+});
+
+fs.writeFile(`./tmp/${filename}__objKeyByDate.json`, JSON.stringify(objKeyByDate), function(err) {
   if (err) throw err;
   console.log("Saved!");
 });
@@ -83,12 +90,7 @@ arryaKeyByDate.forEach(element => {
   objj[element] = objKeyByDate[element].length;
 });
 
-fs.writeFile("objKeyByDate_count.json", JSON.stringify(objj), function(err) {
+fs.writeFile(`./tmp/${filename}__objKeyByDate_count.json`, JSON.stringify(objj), function(err) {
   if (err) throw err;
   console.log("Saved!");
 });
-
-console.log('FINISH');
-
-
-

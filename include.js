@@ -14,6 +14,13 @@ module.exports = {
     // get seconds
     var seconds = Math.round(timeDiff);
     console.log("name: " + name + "seconds: " + seconds);
+  },
+  conta: unique => {
+    var  count = {};
+    unique.forEach((i) => { 
+      count[i] = ( count[i] || 0 ) + 1;
+    });
+    return count;
   }
 };
 
